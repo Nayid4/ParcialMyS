@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Dashboard</h1>
+        <!-- Formulario para cargar el archivo CSV -->
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="file" class="form-label">Cargar archivo CSV:</label>
+                <input type="file" class="form-control" id="file" name="file" accept=".csv">
+            </div>
+            <button type="submit" class="btn btn-primary">Cargar</button>
+        </form>
+        
+        <!-- Mostrar las variables presentes en el archivo CSV -->
+        {% if variables %}
+        <h2 class="mt-5">Variables presentes en el archivo:</h2>
+        <ul>
+            {% for variable in variables %}
+                <li>{{ variable }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        <!-- Mostrar las estadísticas descriptivas -->
+        {% if stats is defined %}
+            {% if not stats.empty %}
+                <h2 class="mt-5">Estadísticas Descriptivas:</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>count</th>
+                            <th>mean</th>
+                            <th>std</th>
+                            <th>min</th>
+                            <th>25%</th>
+                            <th>50%</th>
+                            <th>75%</th>
+                            <th>max</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for column in stats.columns %}
+                        <tr>
+                            <td>{{ column }}</td>
+                            {% for stat in stats[column] %}
+                                <td>{{ stat }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        {% endif %}
+
+        
+        <!-- Mostrar el histograma de distribución -->
+        {% if histogram_url %}
+        <h2 class="mt-5">Histograma de Distribución:</h2>
+        <img src="data:image/png;base64,{{ histogram_url }}" class="img-fluid" alt="Histogram">
+        {% endif %}
+
+        <!-- Mapa interactivo de Colombia -->
+        <h2 class="mt-5">Mapa interactivo de Colombia:</h2>
+        <iframe src="{{ url_for('static', filename='colombia_map.html') }}" width="100%" height="600px"></iframe>
+
+    </div>
+{% endblock %}
